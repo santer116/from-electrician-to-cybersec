@@ -61,7 +61,8 @@ Conseguir mi **primera posición en ciberseguridad**, preferiblemente como:
 ---
 
 ## 🌐 Conecta conmigo  
-[![LinkedIn]([https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/TU-LINKEDIN](https://www.linkedin.com/in/santiago-miguel-fonseca-yicon-7240b0255/))  
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/santiago-miguel-fonseca-yicon-7240b0255/)
+  
 
 ---
 
