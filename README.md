@@ -17,7 +17,7 @@ Aquí recopilo mis **writeups y ejercicios prácticos**.
 
 ### 📘 Secciones:
 - `/writeups/` → Ejercicios y laboratorios resueltos.
-- `/images/` → Capturas de pantalla y diagramas.
+- `/images/` → Capturas de pantalla.
 
 ---
 
@@ -52,11 +52,10 @@ Conseguir mi **primera posición en ciberseguridad**, preferiblemente como:
 ---
 
 ## ✍️ Mis writeups
-*(Próximamente)*
 
 | Fecha | Título | Plataforma | Enlace |
 |--------|---------|-------------|---------|
-| — | — | — | — |
+| 10/11/2025 | Nibbles | HTB | — |
 
 ---
 
