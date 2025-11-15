@@ -1,10 +1,29 @@
 # HTB / CTF Write-up
 
+![Status](https://img.shields.io/badge/HTB-Nibbles-green)
+![Difficulty](https://img.shields.io/badge/Difficulty-Easy-brightgreen)
+![Category](https://img.shields.io/badge/Category-Web-red)
+![Author](https://img.shields.io/badge/Author-Santiago-blue)
+
 **Autor:** Santiago Fonseca  
 **Máquina:** Niblles  
 **IP (objetivo):** 10.129.200.170
 
 **Fecha:** 10-10-2025  
+
+------
+
+## Resumen Ejecutivo
+
+* Objetivo: Comprometer totalmente la máquina Nibbles (HTB)
+* Acceso inicial: Vulnerabilidad en Nibbleblog 4.0.3 (File Upload → RCE)
+* Privesc: Sudo misconfiguration en monitor.sh
+* Técnicas empleadas:
+  * Enumeración web (wfuzz, curl, nmap)
+  * Abuso de plugin vulnerable
+  * Reverse shell + TTY
+  * Escalada vía sudoers
+* Resultado: Acceso root completo + flags obtenidas
 
 ---
 
@@ -453,6 +472,15 @@ bash-4.3#
 
 ------
 
+## Skills Demostrados
+- Enumeración web avanzada (nmap, curl, wfuzz)
+- Explotación manual sin Metasploit
+- Abuso de File Upload
+- Reverse shell + tratamiento de TTY
+- Escalado de privilegios con sudoers
+- Documentación técnica clara
+
+-----
 ## Conclusiones
 
 Durante el proceso de explotación de la máquina Nibbles, se evidencian varias malas prácticas de seguridad que permiten la obtención de acceso root:
@@ -484,5 +512,3 @@ Durante el proceso de explotación de la máquina Nibbles, se evidencian varias 
     * Privilage escalation mediante análisis de sudoers
     * Obtención de TTY interactiva antes de trabajar en el sistema
     * Validación del comportamiento del CMS
-
-
