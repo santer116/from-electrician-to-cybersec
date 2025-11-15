@@ -27,6 +27,12 @@
 
 ---
 
+## Diagrama de ataque
+
+<img width="482" height="1262" alt="writeUp" src="https://github.com/user-attachments/assets/5bd98291-e020-4e5a-9476-d971b92c8c23" />
+
+----
+
 ## Objetivo
  * Gain a foothold on the target and submit the user.txt flag
  * Escalate privileges and submit the root.txt flag.
