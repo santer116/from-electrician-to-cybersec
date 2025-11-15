@@ -1,5 +1,5 @@
 # ⚡ From Electrician to Cybersec 🧠  
-Repositorio de aprendizaje en **ciberseguridad**, documentando mi camino desde el mundo eléctrico hasta la seguridad informática.
+Repositorio de aprendizaje en **ciberseguridad**, documentando mi camino hasta la seguridad informática.
 
 ---
 
@@ -17,7 +17,6 @@ Aquí recopilo mis **writeups y ejercicios prácticos**.
 
 ### 📘 Secciones:
 - `/writeups/` → Ejercicios y laboratorios resueltos.
-- `/images/` → Capturas de pantalla.
 
 ---
 
@@ -46,7 +45,6 @@ Conseguir mi **primera posición en ciberseguridad**, preferiblemente como:
 ## 📚 Certificaciones y formación
 - 🎓 **Grado Superior DAM (Desarrollo de Aplicaciones Multiplataforma)**
 - 🛡️ **Google Cybersecurity Certificate**
-- 📘 En progreso: **CompTIA Security+**
 - 💻 Próximamente: **TryHackMe Blue Team Path**
 
 ---
