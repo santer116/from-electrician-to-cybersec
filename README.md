@@ -24,7 +24,6 @@ Aquí recopilo mis **writeups y ejercicios prácticos**.
 - Fundamentos de **Ciberseguridad y Redes**
 - Análisis de tráfico con **Wireshark / PCAP**
 - **SOC / Blue Team**: detección y respuesta ante incidentes
-- **Linux y scripting (Python / Bash)**
 - Pentesting básico (OWASP Top 10, HTB, TryHackMe)
 
 ---
@@ -38,7 +37,7 @@ Conseguir mi **primera posición en ciberseguridad**, preferiblemente como:
 ---
 
 ## 🛠️ Herramientas que uso
-`Kali Linux` • `Burp Suite` • `Nmap` • `Wireshark` • `Splunk (Free)` • `Python` • `TryHackMe` • `HackTheBox`
+`Parrot Linux` • `Burp Suite` • `Nmap` • `Wireshark` • `Splunk` • `Python` 
 
 ---
 
@@ -51,13 +50,13 @@ Conseguir mi **primera posición en ciberseguridad**, preferiblemente como:
 
 ## ✍️ Mis writeups
 
-| Fecha | Título | Plataforma | Enlace |
-|--------|---------|-------------|---------|
-| 10/11/2025 | Nibbles | HTB | — |
+| Fecha | Título | Plataforma |
+|--------|---------|-------------|
+| 10/11/2025 | Nibbles | HTB |
 
 ---
 
-## 🌐 Conecta conmigo  
+# 🌐 Conecta conmigo  
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/santiago-miguel-fonseca-yicon-7240b0255/)
   
 
